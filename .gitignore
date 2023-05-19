@@ -477,5 +477,10 @@ $RECYCLE.BIN/
 *.lnk
 
 # App setting 
-
 appsettings.json
+
+# environment variable
+.env
+
+# postgres volume
+postgres-data
