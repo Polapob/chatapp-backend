@@ -486,3 +486,5 @@ appsettings.json
 postgres-data
 
 .vscode
+
+Migrations

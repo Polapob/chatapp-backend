@@ -1,19 +1,19 @@
 using chatapp_backend.Data;
-using Microsoft.EntityFrameworkCore;
+using chatapp_backend.Repositories;
+using chatapp_backend.Services;
 
+DotNetEnv.Env.Load();
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<AppDBContext>();
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
-
-
-DotNetEnv.Env.Load();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 var app = builder.Build();
 
