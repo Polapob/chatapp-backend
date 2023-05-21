@@ -11,12 +11,16 @@ public class AppDBContext : DbContext
     }
 
     public DbSet<User> Users { set; get; } = null!;
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        modelBuilder.Entity<User>();
-    }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
+        base.OnConfiguring(optionsBuilder);
         optionsBuilder.UseNpgsql(DotNetEnv.Env.GetString("DATABASE_CONNECTION_STRING"));
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<User>();
     }
 }
