@@ -5,13 +5,13 @@ namespace chatapp_backend.Repositories;
 public interface IUserRepository
 {
     Task<User> CreateUser(User user);
-    User UpdateUser(User user);
-    User GetUserById(Guid id);
-    User GetUserByEmail(string email);
-    User DeleteUser(Guid id);
+    User? UpdateUser(User user);
+    User? GetUserById(Guid id);
+    User? GetUserByEmail(string email);
+    void DeleteUser(Guid id);
 }
 
-public class UserRepository
+public class UserRepository : IUserRepository
 {
 
     private readonly AppDBContext _appDBContext;
@@ -22,15 +22,24 @@ public class UserRepository
 
     async public Task<User> CreateUser(User user)
     {
-        User? _user = await _appDBContext.AddAsync<User>(user);
-        return _user;
+
+        User? _checkUser = GetUserByEmail(user.Email);
+
+        if (_checkUser != null)
+        {
+            throw new BadHttpRequestException("This email is already used.");
+
+        }
+        await _appDBContext.Users.AddAsync(user);
+        await _appDBContext.SaveChangesAsync();
+        return user;
     }
 
-    public User UpdateUser(User user)
+    public User? UpdateUser(User user)
     {
-        User? _user = _appDBContext.Update<User>(user);
+        _appDBContext.Update<User>(user);
         _appDBContext.SaveChanges();
-        return _user;
+        return user;
     }
 
     public User? GetUserById(Guid id)

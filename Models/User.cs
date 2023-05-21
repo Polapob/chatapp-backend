@@ -1,7 +1,6 @@
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-
+using System.ComponentModel.DataAnnotations.Schema;
 namespace chatapp_backend.Models;
-
+[Table("Users")]
 public class User
 {
     public Guid Id { get; set; }
@@ -9,7 +8,6 @@ public class User
     public string FirstName { get; set; } = string.Empty;
     public string LastName { get; set; } = string.Empty;
     public string Password
-
     {
         get; set;
     } = string.Empty;
@@ -17,10 +15,5 @@ public class User
 
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
-    public DateTime? DeleteAt { get; set; }
 
-    public static implicit operator User(EntityEntry<User> v)
-    {
-        throw new NotImplementedException();
-    }
 }
