@@ -5,7 +5,7 @@ namespace chatapp_backend.Repositories;
 public interface IUserRepository
 {
     Task<User> CreateUser(User user);
-    User? UpdateUser(User user);
+    User UpdateUser(User user);
     User? GetUserById(Guid id);
     User? GetUserByEmail(string email);
     void DeleteUser(Guid id);
@@ -35,9 +35,14 @@ public class UserRepository : IUserRepository
         return user;
     }
 
-    public User? UpdateUser(User user)
+    public User UpdateUser(User user)
     {
-        _appDBContext.Update<User>(user);
+        var prevUser = _appDBContext.Users.First(u => u.Id == user.Id);
+        prevUser.FirstName = user.FirstName;
+        prevUser.LastName = user.LastName;
+        prevUser.UserName = user.UserName;
+        prevUser.Password = user.Password;
+        prevUser.UpdatedAt = user.UpdatedAt;
         _appDBContext.SaveChanges();
         return user;
     }
