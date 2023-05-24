@@ -7,8 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace chatapp_backend.Controllers;
 
 
-[Route("api/[controller]")]
 [ApiController]
+[Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
@@ -22,13 +22,13 @@ public class AuthController : ControllerBase
         _loginDTOValidator = loginDTOValidator;
     }
 
-    [HttpPost("/register")]
+    [HttpPost("/api/[controller]/register")]
     async public Task<IActionResult> Register(RegisterDTO registerDTO)
     {
         var result = _registerDTOValidator.Validate(registerDTO);
         if (!result.IsValid)
         {
-            return new BadRequestObjectResult(Results.ValidationProblem(result.ToDictionary()));
+            return new BadRequestObjectResult(new { error = result.Errors.Select((error) => error.ErrorMessage) });
         }
         User user = await _authService.Register(registerDTO);
         return CreatedAtAction(nameof(Register), new
@@ -42,14 +42,13 @@ public class AuthController : ControllerBase
         });
     }
 
-
-    [HttpPost("/login")]
+    [HttpPost("/api/[controller]/login")]
     public IActionResult Login(LoginDTO loginDTO)
     {
         var result = _loginDTOValidator.Validate(loginDTO);
         if (!result.IsValid)
         {
-            return new BadRequestObjectResult(Results.ValidationProblem(result.ToDictionary()));
+            return new BadRequestObjectResult(new { error = result.Errors.Select((error) => error.ErrorMessage) });
         }
         Token token = _authService.Login(loginDTO);
         Response.Cookies.Append("refreshToken", token.RefreshToken, new CookieOptions
@@ -63,6 +62,12 @@ public class AuthController : ControllerBase
             HttpOnly = true,
         });
         return Ok("Login successfully");
+    }
+
+    [HttpGet("/api/[controller]/testMiddleware")]
+    public IActionResult TestMiddleWare()
+    {
+        return Ok("Login successfully with user id = " + Request.Headers["userId"]);
     }
 
 
