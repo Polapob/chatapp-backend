@@ -1,8 +1,9 @@
 using chatapp_backend.Dtos;
 using chatapp_backend.Models;
 using chatapp_backend.Services;
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+
 
 namespace chatapp_backend.Controllers;
 
@@ -11,10 +12,12 @@ namespace chatapp_backend.Controllers;
 public class UserController : ControllerBase
 {
     private readonly IUserService _userService;
+    private readonly IValidator<UpdateUserDTO> _updateUserDTOValidator;
 
-    public UserController(IUserService userService)
+    public UserController(IUserService userService, IValidator<UpdateUserDTO> updateUserDTOValidator)
     {
         _userService = userService;
+        _updateUserDTOValidator = updateUserDTOValidator;
     }
 
 
@@ -69,6 +72,12 @@ public class UserController : ControllerBase
         {
             throw new BadHttpRequestException("Invalid format of ID");
         }
+        var result = _updateUserDTOValidator.Validate(updateUserDTO);
+        if (!result.IsValid)
+        {
+            return new BadRequestObjectResult(new { error = result.Errors.Select((error) => error.ErrorMessage) });
+        }
+
         User user = _userService.UpdateUser(updateUserDTO, guid);
         return NoContent();
     }
