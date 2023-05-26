@@ -484,3 +484,7 @@ appsettings.json
 
 # postgres volume
 postgres-data
+
+.vscode
+
+Migrations

@@ -1,11 +1,27 @@
+using chatapp_backend.Data;
+using chatapp_backend.Repositories;
+using chatapp_backend.Services;
+using chatapp_backend.Validators;
+using chatapp_backend.Dtos;
+using FluentValidation;
+using chatapp_backend.Middlewares;
+
+DotNetEnv.Env.Load();
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddDbContext<AppDBContext>();
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IValidator<RegisterDTO>, RegisterDTOValidator>();
+builder.Services.AddScoped<IValidator<LoginDTO>, LoginDTOValidator>();
+builder.Services.AddScoped<IValidator<UpdateUserDTO>, UpdateUserDTOValidator>();
+
 
 var app = builder.Build();
 
@@ -13,13 +29,13 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
+    // Swagger open at /swagger/index.html
     app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
-
+app.AddGlobalErrorHandler();
+app.AddAuthMiddleware();
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();
