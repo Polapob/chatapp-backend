@@ -20,6 +20,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IValidator<RegisterDTO>, RegisterDTOValidator>();
 builder.Services.AddScoped<IValidator<LoginDTO>, LoginDTOValidator>();
+builder.Services.AddScoped<IValidator<UpdateUserDTO>, UpdateUserDTOValidator>();
 
 
 var app = builder.Build();
